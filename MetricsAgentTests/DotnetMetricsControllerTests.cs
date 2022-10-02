@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MetricsAgent.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,25 @@ namespace MetricsAgentTests
 {
     public class DotnetMetricsControllerTests
     {
+        private DotnetMetricsController _dotnetMetricsController;
+
+        public DotnetMetricsControllerTests()
+        {
+            _dotnetMetricsController = new DotnetMetricsController();
+        }
+
+        [Fact]
+        public void GetMetrics_ReturnOk()
+        {
+            //подготовка данных для тестирования
+            TimeSpan fromTime = TimeSpan.FromSeconds(0);
+            TimeSpan toTime = TimeSpan.FromSeconds(100);
+
+            //исполнение тестируемого кода
+            var result = _dotnetMetricsController.GetDotnetMetrics(fromTime, toTime);
+
+            //подготовка эталонного результата, проверка результата
+            Assert.IsAssignableFrom<IActionResult>(result);
+        }
     }
 }
