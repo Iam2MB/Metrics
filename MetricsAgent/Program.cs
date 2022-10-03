@@ -24,10 +24,11 @@ namespace MetricsAgent
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.Run();
+
+
         }
     }
 }
