@@ -1,7 +1,10 @@
+using AutoMapper;
 using MetricsAgent.Models;
 using MetricsAgent.Services;
 using MetricsAgent.Services.Impl;
+using MetricsAgent.Mappings;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using NLog.Web;
@@ -14,6 +17,23 @@ namespace MetricsAgent
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            #region Configure Options
+
+            builder.Services.Configure<DatabaseOptions>(options =>
+            {
+                builder.Configuration.GetSection("Settings:DatabaseOptions").Bind(options);
+            });
+
+            #endregion
+
+            #region ConfigureMapping
+
+            var mapperConfiguration = new MapperConfiguration(mp => mp.AddProfile(new MapperProfile()));
+            var mapper = mapperConfiguration.CreateMapper();
+            builder.Services.AddSingleton(mapper);
+
+            #endregion
 
             #region Configure logging
 
@@ -75,7 +95,7 @@ namespace MetricsAgent
 
         private static void ConfigureSqlLiteConnection()
         {
-            const string connectionString = "Data Source = metric.db; Version = 3; Pooling = true; Max Pool Size = 100";
+            const string connectionString = "Data Source = metric.db; Version = 3; Pooling = true; Max Pool Size = 100;";
             var connection = new SQLiteConnection(connectionString);
             connection.Open();
             PrepareSchema(connection);
